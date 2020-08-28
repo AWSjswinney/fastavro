@@ -3,7 +3,7 @@ sudo: required
 dist: bionic
 arch:
     - amd64
-    - arm64-graviton
+    - arm64
 python:
     - "3.5"
     - "3.6"
