@@ -11,7 +11,7 @@ script:
     - codecov
 after_success:
     - if [[ $TRAVIS_TAG && "$TRAVIS_OS_NAME" == "linux" && $TRAVIS_PYTHON_VERSION != *"pypy"* ]]; then
-      docker run --rm -v "$(pwd):/data" quay.io/pypa/manylinux2014_x86_64 bash -c "/data/.travis_build_wheel.sh $TRAVIS_PYTHON_VERSION";
+      docker run --rm -v "$(pwd):/data" $DOCKER_IMAGE bash -c "/data/.travis_build_wheel.sh $TRAVIS_PYTHON_VERSION";
       fi;
 deploy:
     provider: releases
@@ -31,3 +31,12 @@ matrix:
         - python: 3.7
         - python: 3.8
         - python: pypy3
+        - os: linux
+          env:
+                - DOCKER_IMAGE=quay.io/pypa/manylinux2014_x86_64
+                - ARCH=x86_64
+        - os: linux
+          arch: arm64-graviton2
+          env:
+                - DOCKER_IMAGE=quay.io/pypa/manylinux2014_aarch64
+                - ARCH=aarch64
