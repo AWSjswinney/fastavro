@@ -1,6 +1,16 @@
 language: python
 sudo: required
 dist: bionic
+arch:
+    - amd64
+    - arm64
+python:
+    - "3.5"
+    - "3.6"
+    - "3.7"
+    - "3.8"
+    - "pypy3"
+
 before_install:
     - sudo apt-get install -y libsnappy-dev
     - pip install python-snappy
@@ -9,10 +19,20 @@ install:
 script:
     - ./run-tests.sh
     - codecov
+    - case $TRAVIS_CPU_ARCH in
+      "arm64")
+        export DOCKER_IMAGE=quay.io/pypa/manylinux2014_aarch64
+        ;;
+      "amd64" | *)
+        export DOCKER_IMAGE=quay.io/pypa/manylinux2014_x86_64
+        ;;
+      esac
+
 after_success:
     - if [[ $TRAVIS_TAG && "$TRAVIS_OS_NAME" == "linux" && $TRAVIS_PYTHON_VERSION != *"pypy"* ]]; then
-      docker run --rm -v "$(pwd):/data" quay.io/pypa/manylinux2014_x86_64 bash -c "/data/.travis_build_wheel.sh $TRAVIS_PYTHON_VERSION";
+      docker run --rm -v "$(pwd):/data" $DOCKER_IMAGE bash -c "/data/.travis_build_wheel.sh $TRAVIS_PYTHON_VERSION";
       fi;
+
 deploy:
     provider: releases
     api_key:
@@ -25,9 +45,6 @@ deploy:
         condition: $TRAVIS_PYTHON_VERSION != *"pypy"*
 
 matrix:
-    include:
-        - python: 3.5
-        - python: 3.6
-        - python: 3.7
-        - python: 3.8
+    exclude:
         - python: pypy3
+          arch: arm64
