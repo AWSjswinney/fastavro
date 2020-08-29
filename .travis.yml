@@ -31,3 +31,8 @@ script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && $TRAVIS_PYTHON_VERSION != *"pypy"* ]]; then
       docker run --rm -v "$(pwd):/data" $DOCKER_IMAGE bash -c "/data/.travis_build_wheel.sh $TRAVIS_PYTHON_VERSION";
       fi;
+
+matrix:
+    exclude:
+        - python: pypy3
+          arch: arm64
