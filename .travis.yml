@@ -20,7 +20,7 @@ script:
     - ./run-tests.sh
     - codecov
     - case $TRAVIS_CPU_ARCH in
-      "arm64" | "arm64-graviton2")
+      "arm64")
         export DOCKER_IMAGE=quay.io/pypa/manylinux2014_aarch64
         ;;
       "amd64" | *)
